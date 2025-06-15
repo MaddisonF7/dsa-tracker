@@ -40,9 +40,10 @@ def create_app():
         session_cookie_samesite='Lax'
     )
 
-
     # Set session to be permanent 30mins
     @app.before_request
+
+    
     def make_session_permanent():
         session.permanent = True
         app.permanent_session_lifetime = app.config['PERMANENT_SESSION_LIFETIME']
