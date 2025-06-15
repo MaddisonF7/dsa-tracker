@@ -26,7 +26,7 @@ def create_app():
     # Initialise CSRF protection to Flask app
     csrf.init_app(app)
     # Setup Talisman security headers
-    talisman = Talisman(
+    Talisman(
         app,
         content_security_policy={
             # From own domain
@@ -36,14 +36,12 @@ def create_app():
         session_cookie_secure=True,
         # Prevent JS access to cookies
         session_cookie_http_only=True,
-        # Protect agasint CSRF
+        # Protect against CSRF
         session_cookie_samesite='Lax'
     )
 
     # Set session to be permanent 30mins
     @app.before_request
-
-    
     def make_session_permanent():
         session.permanent = True
         app.permanent_session_lifetime = app.config['PERMANENT_SESSION_LIFETIME']
