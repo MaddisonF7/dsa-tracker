@@ -31,6 +31,8 @@ def create_app():
         content_security_policy={
             # From own domain
             'default-src': ["'self"],
+            'style-src': ["'self'", "'unsafe-inline'"],
+            'script-src': ["'self'"],
         },
         # Send cookies over HTTPS
         session_cookie_secure=True,
