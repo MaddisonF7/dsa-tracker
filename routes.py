@@ -190,7 +190,9 @@ def apprentices():
         try:
             cur = mysql.connection.cursor()
             # Sort by last_name and store in apprentices
-            cur.execute("SELECT * FROM User WHERE role = 'Apprentice' ORDER BY last_name")
+            cur.execute(
+                "SELECT * FROM User WHERE role = 'Apprentice' ORDER BY last_name"
+            )
             apprentices = cur.fetchall()
             # If the logged in user is an admin retrive their apprentices and sort by last_name
             if user['role'] == 'Admin':
@@ -230,13 +232,11 @@ def exams():
             cur = mysql.connection.cursor()
             # Sort by modifed_date newest to oldest
             cur.execute(
-                """
-                SELECT e.id, e.apprentice_id, e.name, e.exam_date, e.status, e.modified_date,
-                       u.first_name, u.last_name
-                FROM exam e
-                JOIN User u ON e.apprentice_id = u.id
-                ORDER BY e.modified_date DESC
-                """
+                (
+                    "SELECT e.id, e.apprentice_id, e.name, e.exam_date, e.status, e.modified_date,"
+                    " u.first_name, u.last_name FROM exam e JOIN User u ON e.apprentice_id = u.id "
+                    "ORDER BY e.modified_date DESC"
+                )
             )
             # Fetch all exam records
             exam_records = cur.fetchall()
@@ -274,13 +274,11 @@ def leave():
             cur = mysql.connection.cursor()
             # Sort by created_at newest to oldest
             cur.execute(
-                """
-                SELECT l.id, l.apprentice_id, l.leave_type, l.start_date, l.end_date, l.status, l.created_at,
-                       u.first_name, u.last_name
-                FROM leave_request l
-                JOIN User u ON l.apprentice_id = u.id
-                ORDER BY l.created_at DESC
-                """
+                (
+                    "SELECT l.id, l.apprentice_id, l.leave_type, l.start_date, l.end_date, l.status, l.created_at,"
+                    " u.first_name, u.last_name FROM leave_request l JOIN User u ON l.apprentice_id = u.id "
+                    "ORDER BY l.created_at DESC"
+                )
             )
             # Fetch all leave records
             leave_records = cur.fetchall()
@@ -346,13 +344,10 @@ def project():
             cur = mysql.connection.cursor()
             # Sort by start_date newest to oldest
             cur.execute(
-                """
-                SELECT p.id, p.apprentice_id, p.name, p.description, p.start_date, p.end_date, p.status, p.created_at,
-                       u.first_name, u.last_name
-                FROM Project p
-                JOIN User u ON p.apprentice_id = u.id
-                ORDER BY p.start_date DESC
-                """
+                (
+                    "SELECT p.id, p.apprentice_id, p.name, p.description, p.start_date, p.end_date, p.status, p.created_at,"
+                    " u.first_name, u.last_name FROM Project p JOIN User u ON p.apprentice_id = u.id ORDER BY p.start_date DESC"
+                )
             )
             # Fetch all project records
             project_records = cur.fetchall()
