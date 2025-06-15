@@ -1,12 +1,5 @@
 # Import Flask for handelling web application routing
-from flask import (
-    Blueprint,
-    render_template,
-    request,
-    redirect,
-    session,
-    flash,
-)
+from flask import Blueprint, render_template, request, redirect, session, flash
 
 # Import connection to MySQL database from init.py
 from init import mysql
@@ -22,12 +15,13 @@ main_bp = Blueprint("main", __name__)
 
 
 # Define repeating functions
-# Function for setting line_managers session by fetching all users with the role admin from the User table
+# Function for setting line_managers session
 def line_managers_session():
     try:
         cur = mysql.connection.cursor()
         cur.execute(
-            "SELECT id, email, first_name, last_name FROM User WHERE role = 'Admin'"
+            "SELECT id, email, first_name, last_name "
+            "FROM User WHERE role = 'Admin'"
         )
         managers = cur.fetchall()
         session["line_managers"] = {
@@ -44,7 +38,7 @@ def line_managers_session():
         print(f"An error occurred while fetching line managers: {str(e)}")
 
 
-# Function for setting apprentices session by fetching all users with the role apprentice from the User table
+# Function for setting apprentices session
 def apprentices_session():
     try:
         cur = mysql.connection.cursor()
@@ -97,7 +91,7 @@ def validate_input(data, table_name, is_edit=False):
             email_regex = r"^[^@]+@[^@]+\.[^@]+$"
             if not re.match(email_regex, email):
                 errors.append("Invalid email format.")
-        # Password validation for users. Only validates on edit if changing password
+        # Password validation for users
         password = data.get("password", "")
         if not is_edit or (password and password.strip() != ""):
             if len(password) < 6:
@@ -168,13 +162,17 @@ def home():
             try:
                 line_managers_session()
             except Exception as e:
-                return f"An error occurred while fetching line managers: {str(e)}"
+                return (
+                    f"An error occurred while fetching line managers: {str(e)}"
+                )
         # Ensure apprentices session is set
         if "apprentices" not in session:
             try:
                 apprentices_session()
             except Exception as e:
-                return f"An error occurred while fetching apprentices: {str(e)}"
+                return (
+                    f"An error occurred while fetching apprentices: {str(e)}"
+                )
         # Return the home page
         return render_template("home.html", first_name=first_name)
     # If no one is logged in, redirect to login page
@@ -209,7 +207,7 @@ def apprentices():
                 "SELECT * FROM User WHERE role = 'Apprentice' ORDER BY last_name"
             )
             apprentices = cur.fetchall()
-            # If the logged in user is an admin retrive their apprentices and sort by last_name
+            # Retrive their apprentices
             if user["role"] == "Admin":
                 cur.execute(
                     "SELECT * FROM User WHERE role = 'Apprentice' AND line_manager_id = %s ORDER BY last_name",
@@ -260,7 +258,9 @@ def exams():
                     "id": record[0],
                     "apprentice_id": record[1],
                     "name": record[2],
-                    "exam_date": (record[3].strftime("%d-%m-%Y") if record[3] else ""),
+                    "exam_date": (
+                        record[3].strftime("%d-%m-%Y") if record[3] else ""
+                    ),
                     "status": record[4],
                     "modified_date": record[5],
                     "apprentice_name": f"{record[6]} {record[7]}",
@@ -302,8 +302,12 @@ def leave():
                     "id": record[0],
                     "apprentice_id": record[1],
                     "leave_type": record[2],
-                    "start_date": (record[3].strftime("%d-%m-%Y") if record[3] else ""),
-                    "end_date": (record[4].strftime("%d-%m-%Y") if record[4] else ""),
+                    "start_date": (
+                        record[3].strftime("%d-%m-%Y") if record[3] else ""
+                    ),
+                    "end_date": (
+                        record[4].strftime("%d-%m-%Y") if record[4] else ""
+                    ),
                     "status": record[5],
                     "created_at": record[6],
                     "apprentice_name": f"{record[7]} {record[8]}",
@@ -315,7 +319,9 @@ def leave():
             return render_template("leave.html", leaves=leaves, user=user)
         except Exception as e:
             # Return leave.html and show error message
-            error_message = f"An error occurred while fetching leave records: {str(e)}"
+            error_message = (
+                f"An error occurred while fetching leave records: {str(e)}"
+            )
             return render_template("leave.html", error=error_message)
     # If no user is logged in return to login page
     return redirect("/")
@@ -330,11 +336,11 @@ def managers():
         user = session["user"]
         # Get the line_managers from the session
         line_managers = session.get("line_managers", {})
-        # Convert the session into a list then sorted alphabetically by last_name
+        # Convert the session into a list
         sorted_line_managers = sorted(
             line_managers.values(), key=lambda manager: manager["last_name"]
         )
-        # If the logged in user has a line manager, retrieve their line manager's details
+        # Retrieve their line manager's details
         if user["role"] != "Admin" and user.get("line_manager_id"):
             user_line_manager = line_managers.get(str(user["line_manager_id"]))
         else:
@@ -374,8 +380,12 @@ def project():
                     "apprentice_id": record[1],
                     "name": record[2],
                     "description": record[3],
-                    "start_date": (record[4].strftime("%d-%m-%Y") if record[4] else ""),
-                    "end_date": (record[5].strftime("%d-%m-%Y") if record[5] else ""),
+                    "start_date": (
+                        record[4].strftime("%d-%m-%Y") if record[4] else ""
+                    ),
+                    "end_date": (
+                        record[5].strftime("%d-%m-%Y") if record[5] else ""
+                    ),
                     "status": record[6],
                     "created_at": record[7],
                     "apprentice_name": f"{record[8]} {record[9]}",
@@ -384,7 +394,9 @@ def project():
             ]
             cur.close()
             # Return project.html and pass variables
-            return render_template("projects.html", projects=projects, user=user)
+            return render_template(
+                "projects.html", projects=projects, user=user
+            )
         except Exception as e:
             # Return project.html and show error message
             error_message = (
@@ -436,7 +448,9 @@ def add_record(table_name):
         if request.method == "POST":
             # Prepare new record to submit
             new_record = {
-                column: request.form.get(column) for column in columns if column != "id"
+                column: request.form.get(column)
+                for column in columns
+                if column != "id"
             }
             # Call function to validate inputs
             errors = validate_input(new_record, table_name, is_edit=False)
@@ -469,7 +483,9 @@ def add_record(table_name):
                 if new_record["role"] == "Apprentice":
                     new_record["cohort"] = request.form.get("cohort")
                     new_record["start_date"] = request.form.get("start_date")
-                    new_record["line_manager_id"] = request.form.get("line_manager_id")
+                    new_record["line_manager_id"] = request.form.get(
+                        "line_manager_id"
+                    )
                 # Exclude apprentice fields for Admin role
                 elif new_record["role"] == "Admin":
                     # Remove fields specific to apprentices
@@ -525,7 +541,9 @@ def add_record(table_name):
 
 # Route to web application editrecord.html page
 # Edits table records dynamically
-@main_bp.route("/edit/<string:table_name>/<int:record_id>", methods=["GET", "POST"])
+@main_bp.route(
+    "/edit/<string:table_name>/<int:record_id>", methods=["GET", "POST"]
+)
 def edit_record(table_name, record_id):
     # Ensure a user is logged in
     if "user" in session:
@@ -550,7 +568,9 @@ def edit_record(table_name, record_id):
                 return redirect(request.referrer)
             # Fetch the record by ID from the selected table
             cur = mysql.connection.cursor()
-            cur.execute(f"SELECT * FROM {table_name} WHERE id = %s", (record_id,))
+            cur.execute(
+                f"SELECT * FROM {table_name} WHERE id = %s", (record_id,)
+            )
             record = cur.fetchone()
             if not record:
                 return f"Record not found in table {table_name}", 404
@@ -562,7 +582,7 @@ def edit_record(table_name, record_id):
             cur.close()
             # Handle form submission to update changes
             if request.method == "POST":
-                # Set updates but exclude id, created_at, modified_date, and role
+                # Set updates
                 updates = {}
                 for key in columns:
                     if key not in [
@@ -576,7 +596,7 @@ def edit_record(table_name, record_id):
                 # Call function to validate inputs
                 errors = validate_input(updates, table_name, is_edit=True)
                 if errors:
-                    # Return the edit form with errors shown and current record data
+                    # Return the edit form with errors
                     return render_template(
                         "editrecord.html",
                         error=errors,
@@ -603,7 +623,9 @@ def edit_record(table_name, record_id):
                         "Apprentice" if route == "/apprentices" else "Admin"
                     )
                 # Prepare the update query
-                update_query = ", ".join([f"{key} = %s" for key in updates.keys()])
+                update_query = ", ".join(
+                    [f"{key} = %s" for key in updates.keys()]
+                )
                 update_values = list(updates.values()) + [record_id]
                 # Update the record dynamically in the database
                 cur = mysql.connection.cursor()
@@ -636,10 +658,7 @@ def edit_record(table_name, record_id):
                 route=route,
             )
         except Exception as e:
-            return (
-                f"An error occurred while editing the record: {str(e)}",
-                500,
-            )
+            return f"An error occurred while editing the record: {str(e)}", 500
     # Redirect to login page if no user is logged in
     return redirect("/")
 
@@ -659,7 +678,7 @@ def delete(table_name, record_id):
             # Fetch the role of the record being deleted if from the User table
             role = None
             if table_name == "User":
-                # Query the role of the user to check if it's 'Admin' or 'Apprentice'
+                # Check if it's 'Admin' or 'Apprentice'
                 cur = mysql.connection.cursor()
                 cur.execute(
                     f"SELECT role FROM {table_name} WHERE id = %s",
@@ -687,7 +706,9 @@ def delete(table_name, record_id):
             # If the User is an Apprentice delete related records
             if table_name == "User" and role == "Apprentice":
                 cur = mysql.connection.cursor()
-                cur.execute("DELETE FROM Exam WHERE apprentice_id = %s", (record_id,))
+                cur.execute(
+                    "DELETE FROM Exam WHERE apprentice_id = %s", (record_id,)
+                )
                 cur.execute(
                     "DELETE FROM Leave_request WHERE apprentice_id = %s",
                     (record_id,),
