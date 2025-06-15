@@ -47,7 +47,7 @@ def create_app():
         app.permanent_session_lifetime = (
             app.config['PERMANENT_SESSION_LIFETIME']
         )
-        
+
     # Import blueprint for routes
     from routes import main_bp
     # Register blueprint's routes
