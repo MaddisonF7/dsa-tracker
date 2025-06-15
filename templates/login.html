@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Skills Academy Tracker - Login</title>
+    <!-- Link to CSS styles file -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- Link to JavaScript -->
+    <script src="/static/js/script.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>Digital Skills Academy Tracker</h1>
+    </header>
+
+    <!-- Form container -->
+    <div class="login-container">
+        <!-- Flash notifications -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form heading -->
+        <h2>Login</h2>
+
+        <!-- Display error message if login fails -->
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
+
+        <!-- Login form -->
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+            >
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- Registration link -->
+        <div class="register-container">
+            <p>Don't have an account?</p>
+            <a href="/add/User" class="register-link">Register</a>
+        </div>
+    </div>
+</body>
+</html>
