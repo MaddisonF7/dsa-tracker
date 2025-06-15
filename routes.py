@@ -295,10 +295,12 @@ def leave():
             # Sort by created_at newest to oldest
             cur.execute(
                 (
-                    "SELECT l.id, l.apprentice_id, l.leave_type, l.start_date, "
+                    "SELECT l.id, l.apprentice_id, "
+                    "l.leave_type, l.start_date, "
                     "l.end_date, l.status, l.created_at, "
-                    "u.first_name, u.last_name " 
-                    "FROM leave_request l JOIN User u ON l.apprentice_id = u.id "
+                    "u.first_name, u.last_name "
+                    "FROM leave_request l JOIN "
+                    "User u ON l.apprentice_id = u.id "
                     "ORDER BY l.created_at DESC"
                 )
             )
@@ -375,10 +377,11 @@ def project():
             # Sort by start_date newest to oldest
             cur.execute(
                 (
-                    "SELECT p.id, p.apprentice_id, p.name, p.description, p.start_date, " 
+                    "SELECT p.id, p.apprentice_id, p.name, "
+                    "p.description, p.start_date, "
                     "p.end_date, p.status, p.created_at, "
-                    "u.first_name, u.last_name " 
-                    "FROM Project p JOIN User u ON p.apprentice_id = u.id " 
+                    "u.first_name, u.last_name "
+                    "FROM Project p JOIN User u ON p.apprentice_id = u.id "
                     "ORDER BY p.start_date DESC"
                 )
             )
@@ -515,7 +518,7 @@ def add_record(table_name):
             # Insert the new record into the database
             cur = mysql.connection.cursor()
             cur.execute(
-                f"INSERT INTO {table_name} ({columns_query}) " 
+                f"INSERT INTO {table_name} ({columns_query}) "
                 f"VALUES ({placeholders})",
                 values,
             )
@@ -707,8 +710,7 @@ def delete(table_name, record_id):
                     # If apprentices are assigned stop deletion
                     if apprentice_count > 0:
                         flash(
-                            "This line manager still has assigned apprentices and cannot be deleted. "
-                            "Unassign their apprentices to delete this record.",
+                            "Unassign apprentices to delete.",
                             "error",
                         )
                         cur.close()
