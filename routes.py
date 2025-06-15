@@ -43,7 +43,8 @@ def apprentices_session():
     try:
         cur = mysql.connection.cursor()
         cur.execute(
-            "SELECT id, first_name, last_name FROM User WHERE role = 'Apprentice'"
+            "SELECT id, first_name, last_name "
+            "FROM User WHERE role = 'Apprentice'"
         )
         apprentices = cur.fetchall()
         session["apprentices"] = {
@@ -204,13 +205,15 @@ def apprentices():
             cur = mysql.connection.cursor()
             # Sort by last_name and store in apprentices
             cur.execute(
-                "SELECT * FROM User WHERE role = 'Apprentice' ORDER BY last_name"
+                "SELECT * FROM User WHERE "
+                "role = 'Apprentice' ORDER BY last_name"
             )
             apprentices = cur.fetchall()
             # Retrive their apprentices
             if user["role"] == "Admin":
                 cur.execute(
-                    "SELECT * FROM User WHERE role = 'Apprentice' AND line_manager_id = %s ORDER BY last_name",
+                    "SELECT * FROM User WHERE role = 'Apprentice' "
+                    "AND line_manager_id = %s ORDER BY last_name",
                     (user["id"],),
                 )
                 assigned_apprentices = cur.fetchall()
@@ -246,8 +249,10 @@ def exams():
             # Sort by modifed_date newest to oldest
             cur.execute(
                 (
-                    "SELECT e.id, e.apprentice_id, e.name, e.exam_date, e.status, e.modified_date,"
-                    " u.first_name, u.last_name FROM exam e JOIN User u ON e.apprentice_id = u.id "
+                    "SELECT e.id, e.apprentice_id, e.name, e.exam_date, "
+                    "e.status, e.modified_date,"
+                    " u.first_name, u.last_name "
+                    "FROM exam e JOIN User u ON e.apprentice_id = u.id "
                     "ORDER BY e.modified_date DESC"
                 )
             )
@@ -290,8 +295,10 @@ def leave():
             # Sort by created_at newest to oldest
             cur.execute(
                 (
-                    "SELECT l.id, l.apprentice_id, l.leave_type, l.start_date, l.end_date, l.status, l.created_at,"
-                    " u.first_name, u.last_name FROM leave_request l JOIN User u ON l.apprentice_id = u.id "
+                    "SELECT l.id, l.apprentice_id, l.leave_type, l.start_date, "
+                    "l.end_date, l.status, l.created_at, "
+                    "u.first_name, u.last_name " 
+                    "FROM leave_request l JOIN User u ON l.apprentice_id = u.id "
                     "ORDER BY l.created_at DESC"
                 )
             )
@@ -368,8 +375,11 @@ def project():
             # Sort by start_date newest to oldest
             cur.execute(
                 (
-                    "SELECT p.id, p.apprentice_id, p.name, p.description, p.start_date, p.end_date, p.status, p.created_at,"
-                    " u.first_name, u.last_name FROM Project p JOIN User u ON p.apprentice_id = u.id ORDER BY p.start_date DESC"
+                    "SELECT p.id, p.apprentice_id, p.name, p.description, p.start_date, " 
+                    "p.end_date, p.status, p.created_at, "
+                    "u.first_name, u.last_name " 
+                    "FROM Project p JOIN User u ON p.apprentice_id = u.id " 
+                    "ORDER BY p.start_date DESC"
                 )
             )
             # Fetch all project records
@@ -505,7 +515,8 @@ def add_record(table_name):
             # Insert the new record into the database
             cur = mysql.connection.cursor()
             cur.execute(
-                f"INSERT INTO {table_name} ({columns_query}) VALUES ({placeholders})",
+                f"INSERT INTO {table_name} ({columns_query}) " 
+                f"VALUES ({placeholders})",
                 values,
             )
             mysql.connection.commit()
