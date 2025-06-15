@@ -8,10 +8,12 @@ from flask_wtf import CSRFProtect
 from flask_talisman import Talisman
 # Import the Config class to load MySQL database from configuration.py
 from configuration import Config
+
 # Create a MySQL instance
 mysql = MySQL()
 # Create a CSRFProtect instance
 csrf = CSRFProtect()
+
 # create_app function
 def create_app():
     # Create a Flask instance
@@ -23,7 +25,8 @@ def create_app():
     # Initialise CSRF protection to Flask app
     csrf.init_app(app)
     # Setup Talisman security headers
-    talisman = Talisman(app,
+    talisman = Talisman(
+        app,
         content_security_policy={
             # From own domain
             'default-src': ["'self"],
@@ -33,13 +36,14 @@ def create_app():
         # Prevent JS access to cookies
         session_cookie_http_only=True,
         # Protect agasint CSRF
-        session_cookie_samesite='Lax'              
+        session_cookie_samesite='Lax'
     )
     # Set session to be permanent 30mins
     @app.before_request
     def make_session_permanent():
         session.permanent = True
         app.permanent_session_lifetime = app.config['PERMANENT_SESSION_LIFETIME']
+
     # Import blueprint for routes
     from routes import main_bp
     # Register blueprint's routes

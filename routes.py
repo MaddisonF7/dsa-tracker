@@ -6,14 +6,18 @@ from init import mysql
 from werkzeug.security import generate_password_hash, check_password_hash
 # Import re to validate patterns
 import re
+
 # Define a blueprint for all routes
 main_bp = Blueprint('main', __name__)
+
 # Define repeating functions
 # Function for setting line_managers session by fetching all users with the role admin from the User table
 def line_managers_session():
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, email, first_name, last_name FROM User WHERE role = 'Admin'")
+        cur.execute(
+            "SELECT id, email, first_name, last_name FROM User WHERE role = 'Admin'"
+        )
         managers = cur.fetchall()
         session['line_managers'] = {
             manager[0]: {
@@ -21,11 +25,14 @@ def line_managers_session():
                 'email': manager[1],
                 'first_name': manager[2],
                 'last_name': manager[3]
-            } for manager in managers
+            }
+            for manager in managers
         }
         cur.close()
     except Exception as e:
         print(f"An error occurred while fetching line managers: {str(e)}")
+
+
 # Function for setting apprentices session by fetching all users with the role apprentice from the User table
 def apprentices_session():
     try:
@@ -39,6 +46,8 @@ def apprentices_session():
         cur.close()
     except Exception as e:
         print(f"An error occurred while fetching apprentices: {str(e)}")
+
+
 # Function so apprentices can edit their own record if their id matches
 def edit_own_record(table_name, record_id, user):
     # For User table use id field not apprentice_id
@@ -58,8 +67,10 @@ def edit_own_record(table_name, record_id, user):
         return False
     # Set to false to prevent access
     return False
+
+
 # Function to validate form input
-def validate_input(data, table_name, is_edit = False):
+def validate_input(data, table_name, is_edit=False):
     errors = []
     # Email validation for users
     if table_name == 'User':
@@ -84,6 +95,8 @@ def validate_input(data, table_name, is_edit = False):
             elif not re.match(r'^\d{4}$', cohort):
                 errors.append("Cohort must be a 4-digit year.")
     return errors
+
+
 # Define routes
 # On app start route to web application login page
 @main_bp.route('/', methods=['GET', 'POST'])
@@ -125,6 +138,8 @@ def login():
             error = f"An error occurred: {str(e)}"
     # Loads login.html template and any error messages
     return render_template('login.html', error=error)
+
+
 # Route to web application home page
 @main_bp.route('/home')
 def home():
@@ -148,15 +163,19 @@ def home():
         return render_template('home.html', first_name=first_name)
     # If no one is logged in, redirect to login page
     return redirect('/')
+
+
 # Route to web application logout page
 @main_bp.route('/logout', methods=['POST'])
 def logout():
     # Clear session
     session.clear()
     # Show successful log out notification
-    flash('You have successfully logged out.','success')
+    flash('You have successfully logged out.', 'success')
     # Return to login page
     return redirect('/')
+
+
 # Route to web application apprentice page
 @main_bp.route('/apprentices')
 def apprentices():
@@ -166,7 +185,7 @@ def apprentices():
         user = session['user']
         # Set the line_manager data from session into variable
         line_managers = session.get('line_managers', {})
-        # Retrive all apprentices 
+        # Retrive all apprentices
         try:
             cur = mysql.connection.cursor()
             # Sort by last_name and store in apprentices
@@ -174,20 +193,31 @@ def apprentices():
             apprentices = cur.fetchall()
             # If the logged in user is an admin retrive their apprentices and sort by last_name
             if user['role'] == 'Admin':
-                cur.execute("SELECT * FROM User WHERE role = 'Apprentice' AND line_manager_id = %s ORDER BY last_name", (user['id'],))
+                cur.execute(
+                    "SELECT * FROM User WHERE role = 'Apprentice' AND line_manager_id = %s ORDER BY last_name",
+                    (user['id'],)
+                )
                 assigned_apprentices = cur.fetchall()
             # If logged in user is an apprentice keep assigned_apprentices null
             else:
                 assigned_apprentices = None
             cur.close()
             # Loads apprentices.html template and variables
-            return render_template('apprentices.html', user=user,apprentices=apprentices,assigned_apprentices=assigned_apprentices,line_managers=line_managers)
+            return render_template(
+                'apprentices.html',
+                user=user,
+                apprentices=apprentices,
+                assigned_apprentices=assigned_apprentices,
+                line_managers=line_managers
+            )
         # An error took place
         except Exception as e:
             return f"An error took place: {str(e)}"
     # If no ones logged in redirect to login page
     else:
         return redirect('/')
+
+
 # Route to web application exam page
 @main_bp.route('/exams')
 def exams():
@@ -198,13 +228,15 @@ def exams():
             # Connect to MySQL database
             cur = mysql.connection.cursor()
             # Sort by modifed_date newest to oldest
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT e.id, e.apprentice_id, e.name, e.exam_date, e.status, e.modified_date, 
                        u.first_name, u.last_name
                 FROM exam e
                 JOIN User u ON e.apprentice_id = u.id
                 ORDER BY e.modified_date DESC
-            """)
+                """
+            )
             # Fetch all exam records
             exam_records = cur.fetchall()
             exams = [
@@ -228,6 +260,8 @@ def exams():
             return render_template('exams.html', error=error_message)
     # If no user is logged in return to login page
     return redirect('/')
+
+
 # Route to web application leave page
 @main_bp.route('/leave')
 def leave():
@@ -238,13 +272,15 @@ def leave():
             # Connect to MySQL database
             cur = mysql.connection.cursor()
             # Sort by created_at newest to oldest
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT l.id, l.apprentice_id, l.leave_type, l.start_date, l.end_date, l.status, l.created_at,
                        u.first_name, u.last_name
                 FROM leave_request l
                 JOIN User u ON l.apprentice_id = u.id
                 ORDER BY l.created_at DESC
-            """)
+                """
+            )
             # Fetch all leave records
             leave_records = cur.fetchall()
             leaves = [
@@ -269,6 +305,8 @@ def leave():
             return render_template('leave.html', error=error_message)
     # If no user is logged in return to login page
     return redirect('/')
+
+
 # Route to web application line managers page
 @main_bp.route('/managers')
 def managers():
@@ -287,9 +325,15 @@ def managers():
             user_line_manager = None
         # Render the managers.html template and pass the necessary data
         return render_template(
-            'managers.html',user=user,line_managers=sorted_line_managers,user_line_manager=user_line_manager)
+            'managers.html',
+            user=user,
+            line_managers=sorted_line_managers,
+            user_line_manager=user_line_manager
+        )
     # If no one is logged in, redirect to the login page
     return redirect('/')
+
+
 # Route to web application projects page
 @main_bp.route('/projects')
 def project():
@@ -300,13 +344,15 @@ def project():
             # Connect to MySQL database
             cur = mysql.connection.cursor()
             # Sort by start_date newest to oldest
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT p.id, p.apprentice_id, p.name, p.description, p.start_date, p.end_date, p.status, p.created_at,
                        u.first_name, u.last_name
                 FROM Project p
                 JOIN User u ON p.apprentice_id = u.id
                 ORDER BY p.start_date DESC
-            """)
+                """
+            )
             # Fetch all project records
             project_records = cur.fetchall()
             projects = [
@@ -332,6 +378,8 @@ def project():
             return render_template('projects.html', error=error_message)
     # If no user is logged in return to login page
     return redirect('/')
+
+
 # Route to web application addrecord.html page
 # Adds records to tables dynamically
 @main_bp.route('/add/<string:table_name>', methods=['GET', 'POST'])
@@ -341,7 +389,7 @@ def add_record(table_name):
         if request.method == 'GET':
             route = '/' + request.referrer.split('/')[-1]
             session['form_route'] = route
-            # Ensure line_managers session is set 
+            # Ensure line_managers session is set
             if 'line_managers' not in session:
                 line_managers_session()
         # When the form is submitted use the previous route from session
@@ -389,7 +437,7 @@ def add_record(table_name):
             # Default role or grab from registration
             if table_name == 'User':
                 if route == '/apprentices':
-                    new_record['role'] = 'Apprentice' 
+                    new_record['role'] = 'Apprentice'
                 elif route == '/managers':
                     new_record['role'] = 'Admin'
                 elif route == '/':
@@ -439,10 +487,19 @@ def add_record(table_name):
             return redirect(route)
         # Render the addrecord.html template
         return render_template(
-            'addrecord.html',table_name=table_name,user=user,line_managers=line_managers,apprentices=apprentices,columns=columns,route=route)
+            'addrecord.html',
+            table_name=table_name,
+            user=user,
+            line_managers=line_managers,
+            apprentices=apprentices,
+            columns=columns,
+            route=route
+        )
     except Exception as e:
         # Handle any errors during database operations
         return f"An error occurred while adding the record: {str(e)}", 500
+
+
 # Route to web application editrecord.html page
 # Edits table records dynamically
 @main_bp.route('/edit/<string:table_name>/<int:record_id>', methods=['GET', 'POST'])
@@ -548,6 +605,8 @@ def edit_record(table_name, record_id):
             return f"An error occurred while editing the record: {str(e)}", 500
     # Redirect to login page if no user is logged in
     return redirect('/')
+
+
 # Route to web application delete popup
 # Deletes table records dynamically
 @main_bp.route('/delete/<string:table_name>/<int:record_id>', methods=['POST'])
@@ -575,7 +634,7 @@ def delete(table_name, record_id):
                     # If apprentices are assigned stop deletion
                     if apprentice_count > 0:
                         flash(
-                            'This line manager still has assigned apprentices and cannot be deleted. ' 
+                            'This line manager still has assigned apprentices and cannot be deleted. '
                             'Unassign their apprentices to delete this record.',
                             'error'
                         )
@@ -614,4 +673,4 @@ def delete(table_name, record_id):
             # Handle any errors that occur during the deletion process
             return f"An error occurred while deleting the record: {str(e)}", 500
     # Redirect to the login page if no user is logged in
-    return redirect('/login')
+    return redirect('/')
