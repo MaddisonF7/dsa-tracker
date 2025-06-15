@@ -14,6 +14,7 @@ mysql = MySQL()
 # Create a CSRFProtect instance
 csrf = CSRFProtect()
 
+
 # create_app function
 def create_app():
     # Create a Flask instance
@@ -38,6 +39,8 @@ def create_app():
         # Protect agasint CSRF
         session_cookie_samesite='Lax'
     )
+
+
     # Set session to be permanent 30mins
     @app.before_request
     def make_session_permanent():

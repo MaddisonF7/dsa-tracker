@@ -10,6 +10,7 @@ import re
 # Define a blueprint for all routes
 main_bp = Blueprint('main', __name__)
 
+
 # Define repeating functions
 # Function for setting line_managers session by fetching all users with the role admin from the User table
 def line_managers_session():
@@ -230,7 +231,7 @@ def exams():
             # Sort by modifed_date newest to oldest
             cur.execute(
                 """
-                SELECT e.id, e.apprentice_id, e.name, e.exam_date, e.status, e.modified_date, 
+                SELECT e.id, e.apprentice_id, e.name, e.exam_date, e.status, e.modified_date,
                        u.first_name, u.last_name
                 FROM exam e
                 JOIN User u ON e.apprentice_id = u.id

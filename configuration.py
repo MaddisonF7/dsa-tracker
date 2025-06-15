@@ -3,9 +3,10 @@ import os
 # Import timedelta for session lifetime
 from datetime import timedelta
 
+
 # Configure MySQL database connection
 class Config:
-    # Dynamically retrives secret key from environment variable or uses a fallback value
+    # Dynamically retrives secret key
     SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
     # CSRF protection
     WTF_CSRF_ENABLED = True
