@@ -26,6 +26,8 @@
                 {% else %}
                     Edit {{ table_name }}
                 {% endif %}
+            {% elif table_name == 'Leave_request' %}
+                Add Leave
             {% else %}
                 Edit {{ table_name }}
             {% endif %}
@@ -278,6 +280,7 @@
             <div class="actions">
                 <button type="submit">Save</button>
                 <a href="{{ route }}"><button type="button">Cancel</button></a>
+
             </div>
         </form>
     </div>

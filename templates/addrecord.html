@@ -25,11 +25,11 @@
                     Add Apprentice
                 {% elif route == '/managers' %}
                     Add Line Manager
-                {% elif route == '/leave' %}
-                    Add Leave
                 {% else %}
                     Add {{ table_name }}
                 {% endif %}
+            {% elif table_name == 'Leave_request' %}
+                Add Leave
             {% else %}
                 Add {{ table_name }}
             {% endif %}
