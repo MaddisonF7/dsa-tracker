@@ -1,6 +1,7 @@
 import unittest
 from init import create_app
 
+
 class BasicTests(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
@@ -24,6 +25,7 @@ class BasicTests(unittest.TestCase):
     def test_home_redirects(self):
         response = self.client.get('/home', follow_redirects=True)
         self.assertIn(b'Login', response.data)
+
 
 if __name__ == "__main__":
     unittest.main()
