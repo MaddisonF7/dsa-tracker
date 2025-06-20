@@ -14,9 +14,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    env:
-    JAWSDB_URL: ${{ secrets.JAWSDB_URL }}
-    
     steps:
     # Check repository code
     - uses: actions/checkout@v3
