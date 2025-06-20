@@ -1,30 +1,37 @@
-# Use official Python image as base
-FROM python:3.9-slim
+# Use slim Python image
+FROM python:3.11-slim
 
-# Set working directory in container
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Create and set work directory
 WORKDIR /app
 
-# Copy requirements file
-COPY requirements.txt .
-
-# Install required for mysqlclient and gunicorn
+# Install system dependencies for mysqlclient and security
 RUN apt-get update && apt-get install -y \
+    gcc \
     build-essential \
     default-libmysqlclient-dev \
     pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+    libffi-dev \
+    libssl-dev \
+    curl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt gunicorn
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your app code
+# Copy project files
 COPY . .
 
-# Expose Flask/Gunicorn port
+# Create a non-root user and switch to it
+RUN useradd -m nonrootuser
+USER nonrootuser
+
+# Expose port (must match Gunicorn binding)
 EXPOSE 5000
 
-# Set environment variables
-ENV FLASK_APP=app.py
-
-# Start using Gunicorn
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+# Run Gunicorn as production WSGI server
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]

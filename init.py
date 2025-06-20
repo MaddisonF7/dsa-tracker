@@ -28,6 +28,7 @@ def create_app():
     # Setup Talisman security headers
     Talisman(
         app,
+        force_https=False,
         content_security_policy={
             # From own domain
             'default-src': ["'self"],
