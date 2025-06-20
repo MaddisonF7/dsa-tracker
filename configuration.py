@@ -15,7 +15,7 @@ class Config:
     WTF_CSRF_SECRET_KEY = os.getenv('CSRF_SECRET_KEY', 'fallback-crsf-key')
 
     # Default local MySQL
-    MYSQL_HOST = os.getenv('MYSQL_HOST', 'db')
+    MYSQL_HOST = os.getenv('MYSQL_HOST', 'localhost')
     MYSQL_USER = os.getenv('MYSQL_USER', 'root')
     MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'LilaDoodle0707!')
     MYSQL_DB = os.getenv('MYSQL_DB', 'dsa_tracker')

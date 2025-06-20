@@ -25,8 +25,8 @@ jobs:
 
     - name: Run tests
       run: |
-        # Replace with  test command
-        python -m unittest discover
+        # Test command
+        python -m unittest discover tests
 
     - name: Install Heroku CLI
       run: |

@@ -32,6 +32,6 @@ jobs:
         flake8 .
     - name: Run tests
       run: |
-        # Replace with your test command (e.g., pytest)
-        echo "Add your test command here"
+        # Test command
+        python -m unittest discover tests
         

@@ -344,6 +344,8 @@ def managers():
         # Get the logged in user
         user = session["user"]
         # Get the line_managers from the session
+        session.pop("line_managers", None)
+        line_managers_session()
         line_managers = session.get("line_managers", {})
         # Convert the session into a list
         sorted_line_managers = sorted(
