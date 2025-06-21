@@ -74,34 +74,6 @@
         </table>
         {% endif %}
 
-        <!-- Display line manager for logged in apprentice -->
-        {% if user.role == 'Apprentice' and user.line_manager_id %}
-            {% set lm_id = user.line_manager_id|string %}
-            {% set line_manager = line_managers[lm_id] if lm_id in line_managers else None %}
-            {% if line_manager %}
-                <h2>Your Line Manager</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <!-- Display assigned line manager's details -->
-                            <td>{{ line_manager.first_name }}</td>
-                            <td>{{ line_manager.last_name }}</td>
-                            <td>{{ line_manager.email }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            {% else %}
-                <p>No line manager assigned.</p>
-            {% endif %}
-        {% endif %}
-
         <!-- All line managers -->
         <h2>All Line Managers</h2>
         {% if line_managers %}
