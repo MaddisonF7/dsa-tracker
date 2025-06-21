@@ -75,9 +75,10 @@
         {% endif %}
 
         <!-- Display line manager for logged in apprentice -->
-        {% if user.role != 'Admin' and user.get('line_manager_id') %}
+        {% if user.role == 'Apprentice' and user.line_manager_id %}
             {% set lm_id = user.line_manager_id|string %}
-            {% if line_managers[lm_id] is defined %}
+            {% set line_manager = line_managers.get(lm_id) %}
+            {% if line_manager %}
                 <h2>Your Line Manager</h2>
                 <table>
                     <thead>
@@ -90,9 +91,9 @@
                     <tbody>
                         <tr>
                             <!-- Display assigned line manager's details -->
-                            <td>{{ line_managers[lm_id].first_name }}</td>
-                            <td>{{ line_managers[lm_id].last_name }}</td>
-                            <td>{{ line_managers[lm_id].email }}</td>
+                            <td>{{ line_manager.first_name }}</td>
+                            <td>{{ line_manager.last_name }}</td>
+                            <td>{{ line_manager.email }}</td>
                         </tr>
                     </tbody>
                 </table>
