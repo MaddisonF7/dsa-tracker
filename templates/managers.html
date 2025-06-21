@@ -62,13 +62,19 @@
                     <td>{{ user.first_name }}</td>
                     <td>{{ user.last_name }}</td>
                     <td>{{ user.email }}</td>
+                    <td class="actions">
+                        <!-- Admins can edit themselves -->
+                        <a href="/edit/User/{{ manager.id }}">
+                            <button class="edit-button">Edit</button>
+                        </a>
+                    </td>
                 </tr>
             </tbody>
         </table>
         {% endif %}
 
         <!-- Display line manager for logged in apprentice -->
-        {% if user.role != 'Admin' and user.line_manager_id and user.line_manager_id|string in line_managers %}
+        {% if user.role != 'Admin' and user.line_manager_id and user.line_manager_id in line_managers %}
         <h2>Your Line Manager</h2>
         <table>
             <thead>
