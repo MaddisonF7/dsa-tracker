@@ -493,7 +493,7 @@ def add_record(table_name):
                 elif route == "/managers":
                     new_record["role"] = "Admin"
                 elif route == "/":
-                    new_record["role"] = request.form.get("role")
+                    new_record["role"] = "Apprentice"
                 # Include apprentice fields only for Apprentice role
                 if new_record["role"] == "Apprentice":
                     new_record["cohort"] = request.form.get("cohort")

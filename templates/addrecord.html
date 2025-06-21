@@ -20,7 +20,7 @@
         <h2>
             {% if table_name == 'User' %}
                 {% if route == '/' %}
-                    Add User
+                    Add Apprentice
                 {% elif route == '/apprentices' %}
                     Add Apprentice
                 {% elif route == '/managers' %}
@@ -125,12 +125,8 @@
                 <div class="form-column">
                     {% if table_name == 'User' %}
                         {% if route == '/' %}
-                            <label for="role">Role</label>
-                            <select id="role" name="role" required>
-                                <option value="">Select Role</option>
-                                <option value="admin">Admin</option>
-                                <option value="apprentice">Apprentice</option>
-                            </select>
+                            <!-- Hidden role field - enforced as 'Apprentice' -->
+                            <input type="hidden" name="role" value="Apprentice" />
 
                             <div id="apprentice-fields" style="display: none;">
                                 <label for="cohort">Cohort</label>
