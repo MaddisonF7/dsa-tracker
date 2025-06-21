@@ -45,8 +45,8 @@
             {% endif %}
         </div>
 
-        <!-- Display logged in line manager details -->
-        {% if user.role != 'Admin' and user.line_manager %}
+        <!-- Display details for logged in admin -->
+        {% if user.role == 'Admin' %}
         <h2>Your Details</h2>
         <table>
             <thead>
@@ -58,10 +58,32 @@
             </thead>
             <tbody>
                 <tr>
-                    <!-- Display the logged in user's line manager details -->
-                    <td>{{ user.line_manager.first_name }}</td>
-                    <td>{{ user.line_manager.last_name }}</td>
-                    <td>{{ user.line_manager.email }}</td>
+                    <!-- Show admin's own information -->
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- Display line manager for logged in apprentice -->
+        {% if user.role != 'Admin' and user.line_manager_id and user.line_manager_id|string in line_managers %}
+        <h2>Your Line Manager</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <!-- Display assigned line manager's details -->
+                    <td>{{ line_managers[user.line_manager_id|string].first_name }}</td>
+                    <td>{{ line_managers[user.line_manager_id|string].last_name }}</td>
+                    <td>{{ line_managers[user.line_manager_id|string].email }}</td>
                 </tr>
             </tbody>
         </table>
