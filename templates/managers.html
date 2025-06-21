@@ -77,7 +77,7 @@
         <!-- Display line manager for logged in apprentice -->
         {% if user.role == 'Apprentice' and user.line_manager_id %}
             {% set lm_id = user.line_manager_id|string %}
-            {% set line_manager = line_managers.get(lm_id) %}
+            {% set line_manager = line_managers[lm_id] if lm_id in line_managers else None %}
             {% if line_manager %}
                 <h2>Your Line Manager</h2>
                 <table>
