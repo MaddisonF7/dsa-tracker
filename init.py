@@ -16,11 +16,11 @@ csrf = CSRFProtect()
 
 
 # create_app function
-def create_app():
+def create_app(config_class=Config):
     # Create a Flask instance
     app = Flask(__name__)
     # Load configurations from Config class for MySQL connection
-    app.config.from_object(Config)
+    app.config.from_object(config_class)
     # Initialise MySQL connection to Flask app
     mysql.init_app(app)
     # Initialise CSRF protection to Flask app
